@@ -1,0 +1,11 @@
+@import "~bootstrap/scss/bootstrap";
+
+#app-container {
+  min-width: 600px;
+  .input-field {
+    min-width: 220px;
+  }
+  .wrapper {
+    margin: 20px 10px;
+  }
+}

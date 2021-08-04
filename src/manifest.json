@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Search Params",
+  "permissions": ["scripting", "storage", "activeTab", "tabs"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "sp32.png"
+  },
+  "icons": {
+    "128": "sp128.png"
+  },
+  "devtools_page": "devtools.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["content.styles.css", "sp128.png", "sp32.png"],
+      "matches": []
+    }
+  ]
+}
