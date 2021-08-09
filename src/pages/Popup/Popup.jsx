@@ -16,7 +16,7 @@ async function getCurrentTab() {
   return activeTab;
 }
 
-function List({params, pathname, handleItemChange, handlePathChange, handleDeleteItem}) {
+function List({params, pathname, hash, handleItemChange, handlePathChange, handleHashChange, handleDeleteItem}) {
   if (!params) {
     return null;
   }
@@ -36,6 +36,10 @@ function List({params, pathname, handleItemChange, handlePathChange, handleDelet
       <tr>
         <td>path</td>
         <td colSpan="2" className="input-field"><Form.Control type='input' value={pathname} onChange={handlePathChange} /></td>
+      </tr>
+      <tr>
+        <td>hash</td>
+        <td colSpan="2" className="input-field"><Form.Control type='input' value={hash} onChange={handleHashChange} /></td>
       </tr>
       {params.map(({key, value}, index) => {
         return (<tr key={`${key}${index}`}>
@@ -69,13 +73,13 @@ async function fetchTabUrl() {
 
 function getParamsAndPath(url) {
 
-  const {search, pathname} = new URL(url);
+  const {search, pathname, hash} = new URL(url);
   const params = [...new URLSearchParams(search).entries()].reduce((acc, [key, value]) => {
     acc.push({key, value})
     return acc;
   }, []);
 
-  return {params, pathname};
+  return {params, pathname, hash};
 }
 
 async function getData() {
@@ -87,31 +91,36 @@ async function getData() {
 export function Popup() {
   let [pathname, setPathname] = useState('');
   let [params, setParams] = useState('');
+  let [hash, setHash] = useState('');
 
   async function fetchData() {
     const tab = await getCurrentTab();
-    console.log('debug ~ file: Popup.jsx ~ line 93 ~ fetchData ~ tab', tab);
 
     if (!tab.url) {
       setParams('');
       setPathname('');
+      setHash('');
       return;
     }
 
-    const {params: newParams, pathname: newPathname} = await getData();
+    const {params: newParams, pathname: newPathname, hash: newHash} = await getData();
 
    setParams(newParams);
    setPathname(newPathname);
+   setHash(newHash);
  }
   useEffect(() => {
     fetchData();
   }, []);
 
-  const handlePathChange = (event) => {
+  const handleValueChange = (dispatch) => (event) => {
     const {value} = event.target;
 
-    setPathname(value);
+    dispatch(value);
   }
+
+  const handleHashChange = handleValueChange(setHash);
+  const handlePathChange = handleValueChange(setPathname);
 
   const handleItemChange = ({key, value, index}) => {
     let newParams;
@@ -141,8 +150,7 @@ export function Popup() {
 
   const handleSave = async () => {
     const tab = await getCurrentTab();
-    console.log('debug ~ file: Popup.jsx ~ line 144 ~ handleSave ~ tab', tab);
-    const {origin, hash} = new URL(tab.url);
+    const {origin} = new URL(tab.url);
     let searchParams = params.map(({key, value}) => {
       return `${key}=${encodeURIComponent(value)}`;
     }).join('&');
@@ -159,7 +167,7 @@ export function Popup() {
 
 
   return (<div className='wrapper'>
-    {!params ? <div>It seems there is not URL for modify.</div> : <List params={params} pathname={pathname} handlePathChange={handlePathChange} handleItemChange={handleItemChange} handleDeleteItem={handleDeleteItem} />}
+    {!params ? <div>It seems there is not URL for modify.</div> : <List params={params} pathname={pathname} hash={hash} handlePathChange={handlePathChange} handleHashChange={handleHashChange} handleItemChange={handleItemChange} handleDeleteItem={handleDeleteItem} />}
     <ButtonToolbar>
       <Button disabled={!params} variant='secondary' className='me-3' onClick={handleReset}>Reset</Button>
       <Button disabled={!params} onClick={handleSave}>Go</Button>
