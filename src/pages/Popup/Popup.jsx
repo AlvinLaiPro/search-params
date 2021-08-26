@@ -41,7 +41,7 @@ function List({params, pathname, hash, handleItemChange, handlePathChange, handl
         <td>hash</td>
         <td colSpan="2" className="input-field"><Form.Control type='input' value={hash} onChange={handleHashChange} /></td>
       </tr>
-      {params.map(({key, value}, index) => {
+      {params.sort(({key: a}, {key: b}) => a.localeCompare(b)).map(({key, value}, index) => {
         return (<tr key={`${key}${index}`}>
           <td>{key}</td>
           <td><Form.Control value={value} onChange={(event) => handleItemChange({key, value: event.target.value, index})} /></td>
@@ -164,7 +164,6 @@ export function Popup() {
 
     chrome.tabs.update(tab.id, {url: newUrl});
   }
-
 
   return (<div className='wrapper'>
     {!params ? <div>It seems there is not URL for modify.</div> : <List params={params} pathname={pathname} hash={hash} handlePathChange={handlePathChange} handleHashChange={handleHashChange} handleItemChange={handleItemChange} handleDeleteItem={handleDeleteItem} />}
